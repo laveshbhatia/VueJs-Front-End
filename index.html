@@ -166,7 +166,7 @@
     </div>
 
     <script>
-        let app = new Vue({
+        let app = new Vue({ //initialising Vue
             el: '#app',
             data: {
                 sitename: 'After School Classes and Activities',
@@ -187,6 +187,7 @@
 
 
             },
+            //Retrieving all the lessons from server
             created: function () {
                 fetch('https://webappvuejs.herokuapp.com/collection/products').then(function (response) {
                     response.json().then(
@@ -197,6 +198,7 @@
             }
             ,
             methods: {
+                //adding items to cart
                 addToCart(lesson) {
                     lesson.quantity -= 1
                     this.cart.push(lesson);
@@ -207,6 +209,7 @@
 
 
                 },
+                //removing items from cart
                 removeCart(lesson) {
                     this.cart.splice(this.cart.indexOf(lesson), 1)
                     this.final_order.splice(this.final_order.indexOf(lesson), 1)
@@ -232,7 +235,9 @@
                                 }
                                 else {
                                     alert("Order Submitted")
+                                    //calling the function to insert orders
                                     this.insertOrder(order)
+                                    //calling the function to update lessons
                                     this.updateOrder()
                                 }
                             }
@@ -241,6 +246,7 @@
                         }
                     }
                 },
+                //inserting order details into database
                 insertOrder(order) {
                     const newProduct = {
                         name: order.name, email: order.email, mobile: order.mobile, lesson: this.final_order, spaces: this.product_id.length, total_price: this.total
@@ -253,6 +259,7 @@
                         }, body: JSON.stringify(newProduct), // need to stringify the JSON object
                     }).then(response => response.json()).then(responseJSON => { console.log('Success:', responseJSON); });
                 },
+                //Updating the quantities after each order is placed
                 updateOrder() {
 
                     var counter = {};
@@ -278,12 +285,9 @@
                                     }).then(response => response.json()).then(responseJSON => { console.log('Success:', responseJSON); });
                                 });
                         })
-
-
-
-
-
                     }
+                    location.reload(); //reloading the page after order is placed
+
                 },
                 canAddToCart(lesson) {
                     return lesson.spaces > this.cartCount(lesson);
