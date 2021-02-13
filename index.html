@@ -133,8 +133,16 @@
                     <label class="form-control" readonly>Mobile: {{order.mobile}}</label>
                     <label class="form-control" readonly>Total: ${{total}}</label>
                     <br>
-                    <button type="button" v-on:click="submitForm(order)" class="btn btn-info float-right">Place
-                        Order</button>
+                    <div v-if='showButton'>
+                        <button type="button" v-on:click="submitForm(order)" class="btn btn-info float-right">Place
+                            Order</button>
+                    </div>
+                    <div v-else>
+                        <button type="button" v-on:click="reloadPage()"
+                            class="btn btn-info float-right">Continue</button>
+                    </div>
+
+                    <br><br>
                 </div>
                 <div class="col-md-6">
                     <h2 class="text-center">Cart</h2>
@@ -183,6 +191,7 @@
 
                 cart: [],
                 showProduct: true,
+                showButton: true,
                 sortOrder: '',
 
 
@@ -209,6 +218,9 @@
 
 
                 },
+                reloadPage() {
+                    window.location.reload();
+                },
                 //removing items from cart
                 removeCart(lesson) {
                     this.cart.splice(this.cart.indexOf(lesson), 1)
@@ -219,6 +231,9 @@
                 },
                 showCheckout() {
                     this.showProduct = this.showProduct ? false : true;
+                },
+                showContinue() {
+                    this.showButton = this.showButton ? false : true;
                 },
                 submitForm(order) {
                     var name = document.getElementById('inputName').value
@@ -239,6 +254,8 @@
                                     this.insertOrder(order)
                                     //calling the function to update lessons
                                     this.updateOrder()
+                                    //Changing cart to zero to avoid negative spaces
+                                    this.showContinue()
                                 }
                             }
                         } else {
@@ -261,7 +278,6 @@
                 },
                 //Updating the quantities after each order is placed
                 updateOrder() {
-
                     var counter = {};
                     this.product_id.forEach(function (i) { counter[i] = (counter[i] || 0) + 1; });
                     for (const id in counter) {
@@ -284,10 +300,11 @@
                                         ), // need to stringify the JSON object
                                     }).then(response => response.json()).then(responseJSON => { console.log('Success:', responseJSON); });
                                 });
-                        })
-                    }
-                    window.location.reload(); //reloading the page after order is placed to avoid negative spaces
 
+                        })
+
+                    }
+                    //reloading the page after order is placed to avoid negative spaces
                 },
                 canAddToCart(lesson) {
                     return lesson.spaces > this.cartCount(lesson);
